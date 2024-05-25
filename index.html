@@ -1,66 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hourglass Mini-Game</title>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f0f0;
-    }
-    .hourglass {
-        width: 200px;
-        height: 400px;
-        position: relative;
-    }
-    .bulb {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background-color: #ffcc00;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 0;
-    }
-    .sand {
-        width: 80px;
-        height: 0;
-        background-color: #ffd700;
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        transition: height 2s ease-in-out;
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="motion-helper.js" defer></script>
+  <title>Shake Dice</title>
 </head>
 <body>
-<div class="hourglass">
-    <div class="bulb top"></div>
-    <div class="sand"></div>
-    <div class="bulb bottom"></div>
-</div>
-<script>
-    let sand = document.querySelector('.sand');
-    let flipped = false;
-
-    window.addEventListener('deviceorientation', function(event) {
-        let beta = event.beta; // Angle in degrees around the x-axis
-        if (beta > 45 && !flipped) {
-            sand.style.height = "100%";
-            flipped = true;
-        } else if (beta < -45 && flipped) {
-            sand.style.height = "0";
-            flipped = false;
-        }
-    });
-</script>
+  <button id="motion">Shake to Roll Dice</button>
+  <p id="result"></p>
 </body>
 </html>
