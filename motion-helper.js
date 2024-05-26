@@ -1,44 +1,75 @@
-let diceFace = 1; // Initialize with a default value
-
-function handleDeviceMotion(evt) {
-    if (evt.rotationRate.alpha > 10 || evt.rotationRate.beta > 10 || evt.rotationRate.gamma > 10) {
+// Function to handle device orientation event
+function handleDeviceOrientation(evt) {
+    if (Math.abs(evt.alpha) > 10 || Math.abs(evt.beta) > 10 || Math.abs(evt.gamma) > 10) {
         diceFace = Math.floor(Math.random() * 6) + 1;
-        console.log('Dice face updated to:', diceFace);
     }
 }
 
+// Request orientation permission for iOS
 function requestMotionPermission() {
-    console.log('Requesting motion permission...');
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-            .then(permissionState => {
-                console.log('DeviceMotionEvent permission state:', permissionState);
-                if (permissionState === 'granted') {
-                    window.addEventListener('devicemotion', handleDeviceMotion);
+    let isMobile = isMobileTablet();
+    let iOS = is_iOS();
+    console.log("Requesting motion permission...");
+
+    if (iOS) {
+        console.log("This is an iOS device");
+        DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                console.log("Permission response:", response);
+                if (response == 'granted') {
+                    window.addEventListener('deviceorientation', handleDeviceOrientation);
                     document.getElementById('motion').classList.add('hidden');
                 } else {
-                    alert('Permission not granted for Device Motion.');
+                    alert("Permission not granted");
                 }
             })
-            .catch(error => {
-                console.error('Error requesting Device Motion permission:', error);
-                alert('Error requesting Device Motion permission. Check console for details.');
+            .catch((error) => {
+                console.error('DeviceOrientationEvent.requestPermission error:', error);
+                alert("Permission not granted. Please ensure you are using Safari on iOS 13 or later.");
             });
+    } else if (isMobile) {
+        console.log("This is an Android device");
+        alert("Orientation detection enabled for Android devices");
+        window.addEventListener('deviceorientation', handleDeviceOrientation);
+        document.getElementById('motion').classList.add('hidden');
     } else {
-        // Handle regular non-iOS 13+ devices
-        if (isMobileTablet()) {
-            console.log('Non-iOS device, adding event listener for DeviceMotion');
-            window.addEventListener('devicemotion', handleDeviceMotion);
-            document.getElementById('motion').classList.add('hidden');
-        } else {
-            alert('Device Motion not supported or not a mobile device.');
-        }
+        console.log("This is not a mobile device");
+        alert("Orientation detection is only needed on mobile devices");
+        simulateDeviceOrientation(); // Simulate device orientation for testing on desktop
     }
 }
 
-function isMobileTablet() {
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase());
+
+// Function to detect if the device is iOS
+function is_iOS() {
+    return ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform)
+        || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
 }
 
-// Log to confirm script is loaded
-console.log('motion-helper.js loaded');
+// Function to detect if the device is mobile or tablet
+function isMobileTablet() {
+    var check = false;
+    (function(a) {
+        if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a.substr(0, 4))) check = true;
+    })(navigator.userAgent || navigator.vendor || window.opera);
+    return check;
+}
+
+// Simulate device orientation for testing purposes
+function simulateDeviceOrientation() {
+    setInterval(() => {
+        const event = new CustomEvent('deviceorientation', {
+            detail: {
+                alpha: Math.random() * 360, // Simulate random orientation angles
+                beta: Math.random() * 180 - 90,
+                gamma: Math.random() * 180 - 90
+            }
+        });
+        window.dispatchEvent(event);
+    }, 1000); // Simulate device orientation every second
+}
+
+window.addEventListener('deviceorientation', (event) => {
+    const evt = event.detail ? event.detail : event;
+    handleDeviceOrientation(evt);
+});
