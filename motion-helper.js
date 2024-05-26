@@ -1,7 +1,23 @@
+let initialAlpha = null;
+let isMoving = false;
+let movementThreshold = 5; // Threshold to detect significant movement
+
 // Function to handle device orientation event
 function handleDeviceOrientation(evt) {
-    if (Math.abs(evt.alpha) > 10 || Math.abs(evt.beta) > 10 || Math.abs(evt.gamma) > 10) {
-        diceFace = Math.floor(Math.random() * 6) + 1;
+    if (initialAlpha === null) {
+        initialAlpha = evt.alpha;
+    }
+
+    let alphaDifference = Math.abs(evt.alpha - initialAlpha);
+
+    if (alphaDifference > movementThreshold) {
+        if (!isMoving) {
+            isMoving = true;
+            diceFace = Math.floor(Math.random() * 6) + 1;
+            console.log("Dice face:", diceFace);
+        }
+    } else {
+        isMoving = false;
     }
 }
 
@@ -13,20 +29,25 @@ function requestMotionPermission() {
 
     if (iOS) {
         console.log("This is an iOS device");
-        DeviceOrientationEvent.requestPermission()
-            .then(response => {
-                console.log("Permission response:", response);
-                if (response == 'granted') {
-                    window.addEventListener('deviceorientation', handleDeviceOrientation);
-                    document.getElementById('motion').classList.add('hidden');
-                } else {
-                    alert("Permission not granted");
-                }
-            })
-            .catch((error) => {
-                console.error('DeviceOrientationEvent.requestPermission error:', error);
-                alert("Permission not granted. Please ensure you are using Safari on iOS 13 or later.");
-            });
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission()
+                .then(response => {
+                    console.log("Permission response:", response);
+                    if (response === 'granted') {
+                        window.addEventListener('deviceorientation', handleDeviceOrientation);
+                        document.getElementById('motion').classList.add('hidden');
+                    } else {
+                        alert("Permission not granted");
+                    }
+                })
+                .catch((error) => {
+                    console.error('DeviceOrientationEvent.requestPermission error:', error);
+                    alert("Permission not granted. Please ensure you are using Safari on iOS 13 or later.");
+                });
+        } else {
+            console.log('DeviceOrientationEvent.requestPermission is not a function');
+            alert("DeviceOrientationEvent.requestPermission is not supported on this device.");
+        }
     } else if (isMobile) {
         console.log("This is an Android device");
         alert("Orientation detection enabled for Android devices");
@@ -38,7 +59,6 @@ function requestMotionPermission() {
         simulateDeviceOrientation(); // Simulate device orientation for testing on desktop
     }
 }
-
 
 // Function to detect if the device is iOS
 function is_iOS() {
