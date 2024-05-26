@@ -5,7 +5,6 @@ function setup() {
 }
 
 function draw() {
-    background(255); // Clear the background for each frame
     let diceSize = min(width, height) * 0.5;
     drawDice(width / 2, height / 2, diceSize);
 }

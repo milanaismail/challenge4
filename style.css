@@ -19,12 +19,14 @@ body, html {
     background-color: #F9F9F9;
 }
 
-#motion{
-background-color: #EAD2FF;
-padding: 10px;
-border-radius: 10px;
-font-weight: bold;
-}
-.hidden {
-    display: none;
-}
+    #motion{
+    background-color: #EAD2FF;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    border: none;
+    }
+
+    .hidden {
+        display: none;
+    }
