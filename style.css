@@ -1,0 +1,30 @@
+
+#Elements{
+    width: 120px;
+    height: auto;
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F9F9F9;
+}
+
+#motion{
+background-color: #EAD2FF;
+padding: 10px;
+border-radius: 10px;
+font-weight: bold;
+}
+.hidden {
+    display: none;
+}
